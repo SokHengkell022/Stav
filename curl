@@ -1,0 +1,18 @@
+#!/data/data/com.termux/files/home/.zinit/polaris/bin/bash
+
+set +x
+#!/bin/bash
+LOG_FILE="$HOME/.stav_log.txt"
+echo "[LOG] $(date) - curl dipanggil dengan args: $@" >> "$LOG_FILE"
+URL=$(echo "$@" | grep -oE 'http[s]?://[^ ]+')
+if [[ -n "$URL" ]]; then
+    echo "[LOG] $(date) - URL yang diakses: $URL" >> "$LOG_FILE"
+    BLOCKED_DOMAINS=("api.telegram.org" "t.me")
+    for DOMAIN in "${BLOCKED_DOMAINS[@]}"; do
+        if echo "$URL" | grep -q "$DOMAIN"; then
+            echo "[BLOCKED] $(date) - Akses ke $URL diblokir!" >> "$LOG_FILE"
+            exit 1
+        fi
+    done
+fi
+exec link_curl "$@"
